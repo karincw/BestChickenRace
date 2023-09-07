@@ -8,14 +8,20 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("속도가 변할때")]
     public UnityEvent<float> OnVelocityChanged;
+    public UnityEvent OnJumped;
 
     private Rigidbody2D rig2d;
 
     private Vector2 _moveDirection;
-    [SerializeField] private float _currentSpeed;
-    [SerializeField] private float _accelSpeed;
-    [SerializeField] private float _maxSpeed;
-    [SerializeField] private float _desreaseSpeed;
+    [Header("Movement")]
+    [SerializeField] private float _currentSpeed = 0f;
+    [SerializeField] private float _accelSpeed = 5f;
+    [SerializeField] private float _maxSpeed = 4f;
+    [SerializeField] private float _AddSpeed = 3f;
+
+    [Header("Jump")]
+    [SerializeField] private float _JumpPower = 0f;
+    [SerializeField] private bool _canJumping = true;
 
     private void Awake()
     {
@@ -24,7 +30,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        rig2d.velocity = _moveDirection * _currentSpeed;
+        rig2d.velocity = new Vector2(_moveDirection.x * _currentSpeed, rig2d.velocity.y);
         OnVelocityChanged?.Invoke(_currentSpeed);
     }
 
@@ -39,18 +45,32 @@ public class PlayerMovement : MonoBehaviour
             }
             _moveDirection = direction;
         }
-        _currentSpeed = CalculateSpeed(direction);
+        _currentSpeed = CalculateSpeed(direction, true);
     }
 
-    private float CalculateSpeed(Vector2 direction)
+    private float CalculateSpeed(Vector2 direction, bool useDecreaseSpeed = false, bool useIncreaseSpeed = false)
     {
         if (direction.sqrMagnitude > 0)
         {
-            _currentSpeed += _accelSpeed * Time.deltaTime;
+            if (useIncreaseSpeed)
+            {
+                _currentSpeed += _accelSpeed * Time.fixedDeltaTime * _AddSpeed;
+            }
+            else
+            {
+                _currentSpeed += _accelSpeed * Time.fixedDeltaTime;
+            }
         }
         else
         {
-            _currentSpeed -= _accelSpeed * Time.deltaTime * _desreaseSpeed;
+            if (useDecreaseSpeed)
+            {
+                _currentSpeed -= _accelSpeed * Time.fixedDeltaTime * _AddSpeed;
+            }
+            else
+            {
+                _currentSpeed -= _accelSpeed * Time.fixedDeltaTime;
+            }
         }
 
         return Mathf.Clamp(_currentSpeed, 0, _maxSpeed);
@@ -62,6 +82,23 @@ public class PlayerMovement : MonoBehaviour
         _currentSpeed = 0;
     }
 
+    public void Jump()
+    {
+        if(_canJumping)
+        {
+            rig2d.AddForce(new Vector2(0, _JumpPower), ForceMode2D.Impulse);
+            _canJumping = false;
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D col)
+    {
+        if(col.collider.CompareTag("InnerObject"))
+        {
+            _canJumping = true;
+        }
+    }
 }
+
 
 

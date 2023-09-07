@@ -7,20 +7,21 @@ public class PlayerInput : MonoBehaviour
     public UnityEvent<Vector2> Movement;
     public UnityEvent jump;
 
-    Camera main;
+    private bool _jumpPressed = false;
+    Camera cam;
 
     public PlayerInputAction PlayerInputAction { get; private set; }
 
     private void Awake()
     {
-        main = Camera.main;
+        cam = Camera.main;
         PlayerInputAction = new PlayerInputAction();
         PlayerInputAction.Enable();
         //PlayerInputAction.PlayerAction.MoveVector.performed += MovementPerform;
         PlayerInputAction.PlayerAction.Jump.performed += JumpPerform;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         Movement?.Invoke(PlayerInputAction.PlayerAction.MoveVector.ReadValue<Vector2>());
     }
