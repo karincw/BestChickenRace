@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("속도가 변할때")]
     public UnityEvent<float> OnVelocityChanged;
-    public UnityEvent OnJumped;
+    public UnityEvent<bool> OnJumped;
 
     private Rigidbody2D rig2d;
 
@@ -23,6 +23,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float _JumpPower = 0f;
     [SerializeField] private bool _canJumping = true;
 
+
+
     private void Awake()
     {
         rig2d = GetComponent<Rigidbody2D>();
@@ -32,8 +34,8 @@ public class PlayerMovement : MonoBehaviour
     {
         rig2d.velocity = new Vector2(_moveDirection.x * _currentSpeed, rig2d.velocity.y);
         OnVelocityChanged?.Invoke(_currentSpeed);
+        OnJumped?.Invoke(!_canJumping);
     }
-
 
     public void Movement(Vector2 direction)
     {
@@ -76,27 +78,19 @@ public class PlayerMovement : MonoBehaviour
         return Mathf.Clamp(_currentSpeed, 0, _maxSpeed);
     }
 
-    public void StopImmediately()
-    {
-        _moveDirection = Vector2.zero;
-        _currentSpeed = 0;
-    }
-
     public void Jump()
     {
-        if(_canJumping)
+        rig2d.AddForce(new Vector2(0, _JumpPower), ForceMode2D.Impulse);
+        if (_canJumping)
         {
-            rig2d.AddForce(new Vector2(0, _JumpPower), ForceMode2D.Impulse);
             _canJumping = false;
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D col)
+    public void CanNotMovement()
     {
-        if(col.collider.CompareTag("InnerObject"))
-        {
-            _canJumping = true;
-        }
+        _accelSpeed = 0;
+        _JumpPower = 0;
     }
 }
 

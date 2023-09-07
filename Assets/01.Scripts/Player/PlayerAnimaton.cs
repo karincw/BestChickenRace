@@ -4,15 +4,22 @@ using UnityEngine;
 
 public class PlayerAnimaton : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    SpriteRenderer _spriterenderer;
+    Animator _animator;
+
+    private void Awake()
+    {
+        _spriterenderer = GetComponentInChildren<SpriteRenderer>();
+        _animator = GetComponent<Animator>();
+    }
+
+    private void Update()
     {
         
     }
 
-    // Update is called once per frame
-    void Update()
+    public void SetAniSpeedValue(float value)
     {
-        
+        _animator.SetFloat("Speed", value);
     }
 }
