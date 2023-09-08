@@ -22,4 +22,14 @@ public class PlayerAnimaton : MonoBehaviour
     {
         _animator.SetFloat("Speed", value);
     }
+
+    public void SetAniJumpValue(bool value)
+    {
+        _animator.SetBool("Jump", value);
+    }
+
+    public void SetAniWallJumpValue(bool value)
+    {
+        _animator.SetBool("WallLanding", value);
+    }
 }

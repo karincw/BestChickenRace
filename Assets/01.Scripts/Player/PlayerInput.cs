@@ -7,7 +7,6 @@ public class PlayerInput : MonoBehaviour
     public UnityEvent<Vector2> Movement;
     public UnityEvent jump;
 
-    private bool _jumpPressed = false;
     Camera cam;
 
     public PlayerInputAction PlayerInputAction { get; private set; }
