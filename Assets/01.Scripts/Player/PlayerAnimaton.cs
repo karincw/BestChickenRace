@@ -13,11 +13,6 @@ public class PlayerAnimaton : MonoBehaviour
         _animator = GetComponent<Animator>();
     }
 
-    private void Update()
-    {
-        
-    }
-
     public void SetAniSpeedValue(float value)
     {
         _animator.SetFloat("Speed", value);
