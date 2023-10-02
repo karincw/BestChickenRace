@@ -1,30 +1,33 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerAnimaton : MonoBehaviour
+public class PlayerAnimation : Player
 {
     SpriteRenderer _spriterenderer;
     Animator _animator;
 
     private void Awake()
     {
-        _spriterenderer = GetComponentInChildren<SpriteRenderer>();
+        _spriterenderer = GetComponent<SpriteRenderer>();
         _animator = GetComponent<Animator>();
     }
 
+
     public void SetAniSpeedValue(float value)
     {
-        _animator.SetFloat("Speed", value);
+        GameModePlay(() => _animator.SetFloat("Speed", value));
     }
 
     public void SetAniJumpValue(bool value)
     {
-        _animator.SetBool("Jump", value);
+        GameModePlay(() => _animator.SetBool("Jump", value));
     }
 
     public void SetAniWallJumpValue(bool value)
     {
-        _animator.SetBool("WallLanding", value);
+        GameModePlay(() => _animator.SetBool("WallLanding", value));
     }
+
 }

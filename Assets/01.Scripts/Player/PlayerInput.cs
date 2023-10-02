@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
-public class PlayerInput : MonoBehaviour
+public class PlayerInput : Player
 {
     public UnityEvent<Vector2> Movement;
     public UnityEvent jump;
@@ -18,12 +18,12 @@ public class PlayerInput : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Movement?.Invoke(PlayerInputAction.PlayerAction.MoveVector.ReadValue<Vector2>());
+        GameModePlay(() => Movement?.Invoke(PlayerInputAction.PlayerAction.MoveVector.ReadValue<Vector2>()));
     }
 
     private void JumpPerform(InputAction.CallbackContext context)
     {
-        jump?.Invoke();
+        GameModePlay(() => jump?.Invoke());
     }
 
 

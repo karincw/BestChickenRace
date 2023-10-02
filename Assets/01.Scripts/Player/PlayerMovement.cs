@@ -1,18 +1,11 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : Player
 {
-    private enum MapType
-    {
-        NONE = -1,
-        FLOOR = 1,
-        WALL = 2
-    }
-
-
     [Header("속도가 변할때")]
     public UnityEvent<float> OnVelocityChanged;
     public UnityEvent<bool> OnJumped;
@@ -22,6 +15,7 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D _rig2d;
 
     private Vector2 _moveDirection;
+    [SerializeField] private float _landingDirX;
 
     [Header("Movement")]
     [SerializeField] private float _currentSpeed = 0f;
@@ -38,6 +32,21 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private bool _landing = false;
     [SerializeField] private float _wallDownSpeed;
 
+    public Vector2 Velocity
+    {
+        get
+        {
+            if (_currentSpeed <= 0.3f)
+            {
+                return _rig2d.velocity;
+            }
+            else
+            {
+                return new Vector2(_moveDirection.x * _currentSpeed, _rig2d.velocity.y);
+            }
+        }
+        set { }
+    }
 
     private void Awake()
     {
@@ -45,19 +54,28 @@ public class PlayerMovement : MonoBehaviour
         _col = GetComponent<Collider2D>();
     }
 
+    private void Update()
+    {
+
+    }
+
     private void FixedUpdate()
     {
-        _rig2d.velocity = new Vector2(_moveDirection.x * _currentSpeed, _rig2d.velocity.y);
+        _rig2d.velocity = Velocity;
         OnVelocityChanged?.Invoke(_currentSpeed);
         OnJumped?.Invoke(!_canJumping);
         OnWallLanding?.Invoke(_landing);
-        Debug.Log(MapCheck());
 
+        MapCheck();
 
     }
 
     public void Movement(Vector2 direction)
     {
+        if (_landing == true)
+        {
+            return;
+        }
         if (direction.sqrMagnitude > 0)
         {
             if (Vector2.Dot(_moveDirection, direction) < 0)
@@ -99,7 +117,14 @@ public class PlayerMovement : MonoBehaviour
 
     public void Jump()
     {
-        if (_canJumping || _landing)
+        if (_landing)
+        {
+            _rig2d.velocity = Vector2.zero;
+            _rig2d.AddForce(new Vector2(_landingDirX * _JumpPower / 3, _JumpPower), ForceMode2D.Impulse);
+            _canJumping = false;
+            _landing = false;
+        }
+        else if (_canJumping)
         {
             _rig2d.velocity = Vector2.zero;
             _rig2d.AddForce(new Vector2(0, _JumpPower), ForceMode2D.Impulse);
@@ -108,40 +133,44 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    public void CanNotMovement()
-    {
-        _accelSpeed = 0;
-        _JumpPower = 0;
-    }
 
     public void WallLanding(bool value)
     {
-        if (value == true)
+        if (value == true && _landing == true)
         {
             _rig2d.MovePosition(new Vector2(_rig2d.position.x, _rig2d.position.y - (_wallDownSpeed * Time.fixedDeltaTime)));
+            _currentSpeed = 0;
         }
     }
 
-    private MapType MapCheck()
+    private void MapCheck()
     {
         RaycastHit2D floorRay = Physics2D.BoxCast(_col.bounds.center, _col.bounds.size, 0f, Vector3.down, 0.01f, mapLayer);
         if (floorRay.collider != null)
         {
-            if (_landing == true)
-                _landing = false;  
+            _landing = false;
             _canJumping = true;
-            return MapType.FLOOR;
+            return;
         }
         RaycastHit2D rightWallRay = Physics2D.BoxCast(_col.bounds.center, _col.bounds.size, 0f, Vector3.right, 0.01f, mapLayer);
         RaycastHit2D leftWallRay = Physics2D.BoxCast(_col.bounds.center, _col.bounds.size, 0f, Vector3.left, 0.01f, mapLayer);
-        if (rightWallRay.collider != null || leftWallRay.collider != null)
+        if (rightWallRay.collider != null)
         {
+            _landingDirX = -1;
             _landing = true;
-            return MapType.WALL;
+            _canJumping = false;
+            return;
+        }
+        else if (leftWallRay.collider != null)
+        {
+            _landingDirX = 1;
+            _landing = true;
+            _canJumping = false;
+            return;
         }
         _landing = false;
         _canJumping = false;
-        return MapType.NONE;
+        return;
     }
 
 
