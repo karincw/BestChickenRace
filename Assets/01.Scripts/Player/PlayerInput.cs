@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -9,11 +10,21 @@ public class PlayerInput : Player
 
     public PlayerInputAction PlayerInputAction { get; private set; }
 
+    Camera _cam;
+    public LayerMask findObjLayer;
+    private PlayerStateManager _playerStateManager;
+    public bool InstallObj = false;
+
     private void Awake()
     {
+        _cam = Camera.main;
         PlayerInputAction = new PlayerInputAction();
         PlayerInputAction.Enable();
         PlayerInputAction.PlayerAction.Jump.performed += JumpPerform;
+        PlayerInputAction.PlayerAction.MouseClick.performed += OnMouseLeft;
+        PlayerInputAction.PlayerAction.MouseClickR.performed += OnMouseRight;
+
+        _playerStateManager = FindAnyObjectByType<PlayerStateManager>();
     }
 
     private void FixedUpdate()
@@ -25,6 +36,28 @@ public class PlayerInput : Player
     {
         GameModePlay(() => jump?.Invoke());
     }
+    private void OnMouseLeft(InputAction.CallbackContext callback)
+    {
+        InstallModePlay(() =>
+        {
+            if (_playerStateManager.clicked == true)
+            {
+                return;
+            }
+            Vector2 mousePos = _cam.ScreenToWorldPoint(Input.mousePosition);
 
+            RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, 0.01f, findObjLayer);
 
+            if (hit.collider != null && hit.collider.CompareTag("Item"))
+            {
+                _playerStateManager.clickedItemName = hit.collider.gameObject.name;
+                _playerStateManager.clicked = true;
+                Destroy(hit.collider.gameObject);
+            }
+        });
+    }
+    private void OnMouseRight(InputAction.CallbackContext callback)
+    {
+        InGameUIManager.Instance.Uninstalling();
+    }
 }

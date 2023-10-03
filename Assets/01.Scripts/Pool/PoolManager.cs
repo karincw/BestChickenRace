@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Pool;
 
-public class PoolManager : MonoBehaviour
+public class PoolManager : MonoSingleton<PoolManager>
 {
     [System.Serializable]
     private class ObjectInfo
@@ -72,6 +72,7 @@ public class PoolManager : MonoBehaviour
     private GameObject CreateNewObject()
     {
         GameObject newobj = Instantiate(gameobjDic[objName]);
+        newobj.transform.parent = gameObject.transform;
         newobj.GetComponent<Poolable>().pool = objPoolDic[objName];
         return newobj;
     }

@@ -1,8 +1,11 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+public enum PlayerMode
+{
+    GAME,
+    INSTALLATION
+}
 public class PlayerStateManager : MonoBehaviour
 {
     [SerializeField] private GameObject currentPlayer;
@@ -10,6 +13,9 @@ public class PlayerStateManager : MonoBehaviour
     private PlayerInput _input;
     private PlayerAnimation _animation;
     private PlayerMovement _movement;
+
+    public string clickedItemName;
+    public bool clicked = false;
 
     private void Awake()
     {
@@ -21,35 +27,31 @@ public class PlayerStateManager : MonoBehaviour
 
 }
 
-public enum PlayerMode
-{
-    GAME,
-    INSTALLATION
-}
+
 public class Player : MonoBehaviour
 {
-    internal PlayerMode Mode = PlayerMode.INSTALLATION;
+    public static PlayerMode MODE = PlayerMode.GAME;
     
     public void SetGameMode()
     {
-        Mode = PlayerMode.GAME;
+        MODE = PlayerMode.GAME;
     }
 
     public void SetInstallationMode()
     {
-        Mode = PlayerMode.INSTALLATION;
+        MODE = PlayerMode.INSTALLATION;
     }
 
     internal void GameModePlay(Action action)
     {
-        if (Mode == PlayerMode.GAME)
+        if (MODE == PlayerMode.GAME)
         {
             action.Invoke();
         }
     }
     internal void InstallModePlay(Action action)
     {
-        if (Mode == PlayerMode.INSTALLATION)
+        if (MODE == PlayerMode.INSTALLATION)
         {
             action.Invoke();
         }
