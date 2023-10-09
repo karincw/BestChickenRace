@@ -1,3 +1,4 @@
+using System;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
@@ -14,6 +15,18 @@ public class PlayerInput : Player
     public LayerMask findObjLayer;
     private PlayerStateManager _playerStateManager;
     public bool InstallObj = false;
+
+    public override void GameModePlay(Action action)
+    {
+        if (_playerStateManager.IsEnding is not true)
+        {
+            base.GameModePlay(action);
+        }
+        else
+        {
+            Movement?.Invoke(Vector2.zero);
+        }
+    }
 
     private void Awake()
     {

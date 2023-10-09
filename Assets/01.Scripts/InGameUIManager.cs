@@ -12,7 +12,6 @@ public class InGameUIManager : MonoSingleton<InGameUIManager>
     private void Awake()
     {
         _cam = Camera.main;
-        _PlayerStateManager = GetComponent<PlayerStateManager>();
     }
     private void Start()
     {

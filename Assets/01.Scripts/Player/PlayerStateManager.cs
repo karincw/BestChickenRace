@@ -17,6 +17,8 @@ public class PlayerStateManager : MonoBehaviour
     public string clickedItemName;
     public bool clicked = false;
 
+    public bool IsEnding = false;
+
     private void Awake()
     {
         _input = currentPlayer.GetComponent<PlayerInput>();
@@ -24,6 +26,11 @@ public class PlayerStateManager : MonoBehaviour
         _movement = currentPlayer.GetComponent<PlayerMovement>();
     }
 
+    public void Ending()
+    {
+        _animation.SetEndingAnimation();
+        IsEnding = true;
+    }
 
 }
 
@@ -31,7 +38,7 @@ public class PlayerStateManager : MonoBehaviour
 public class Player : MonoBehaviour
 {
     public static PlayerMode MODE = PlayerMode.GAME;
-    
+
     public void SetGameMode()
     {
         MODE = PlayerMode.GAME;
@@ -42,14 +49,14 @@ public class Player : MonoBehaviour
         MODE = PlayerMode.INSTALLATION;
     }
 
-    internal void GameModePlay(Action action)
+    public virtual void GameModePlay(Action action)
     {
         if (MODE == PlayerMode.GAME)
         {
             action.Invoke();
         }
     }
-    internal void InstallModePlay(Action action)
+    public virtual void InstallModePlay(Action action)
     {
         if (MODE == PlayerMode.INSTALLATION)
         {

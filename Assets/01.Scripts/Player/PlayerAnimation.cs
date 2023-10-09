@@ -30,4 +30,9 @@ public class PlayerAnimation : Player
         GameModePlay(() => _animator.SetBool("WallLanding", value));
     }
 
+    public void SetEndingAnimation()
+    {
+        GameModePlay(() => { Debug.Log(gameObject.name + "통과완료"); });
+    }
+
 }
