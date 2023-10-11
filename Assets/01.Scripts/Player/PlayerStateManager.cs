@@ -1,18 +1,22 @@
+using Cinemachine;
 using System;
 using UnityEngine;
 
 public enum PlayerMode
 {
     GAME,
-    INSTALLATION
+    INSTALLATION,
+    DEAD
 }
-public class PlayerStateManager : MonoBehaviour
+public class PlayerStateManager : Player
 {
     [SerializeField] private GameObject currentPlayer;
+    [SerializeField] public CinemachineVirtualCamera PlayerCam;
 
     private PlayerInput _input;
     private PlayerAnimation _animation;
     private PlayerMovement _movement;
+    private Map _map;
 
     public string clickedItemName;
     public bool clicked = false;
@@ -24,11 +28,42 @@ public class PlayerStateManager : MonoBehaviour
         _input = currentPlayer.GetComponent<PlayerInput>();
         _animation = currentPlayer.GetComponent<PlayerAnimation>();
         _movement = currentPlayer.GetComponent<PlayerMovement>();
+        PlayerCam = GameObject.Find("PlayerCam").GetComponent<CinemachineVirtualCamera>();
+        _map = FindObjectOfType<Map>();
     }
 
-    public void Ending()
+    private void Update()
     {
-        _animation.SetEndingAnimation();
+        if (transform.position.y <= -17)
+        {
+            SetDeadMode(() =>
+            {
+                PlayerCam.Priority = 5;
+                gameObject.SetActive(false);
+                Player.MODE = PlayerMode.DEAD;
+            });
+        }
+    }
+
+    public void StartPlayMode()
+    {
+        SetGameMode();
+        PlayerCam.Priority = 15;
+        Player.MODE = PlayerMode.GAME;
+    }
+
+    public void StartInstallMode()
+    {
+        SetInstallationMode();
+        PlayerCam.Priority = 5;
+        gameObject.SetActive(true);
+        transform.position = _map.playerStartPos;
+        Player.MODE = PlayerMode.INSTALLATION;
+    }
+
+    public void Winning()
+    {
+        _animation.SetWinAnimation();
         IsEnding = true;
     }
 
@@ -39,14 +74,22 @@ public class Player : MonoBehaviour
 {
     public static PlayerMode MODE = PlayerMode.GAME;
 
-    public void SetGameMode()
+    public void SetGameMode(Action action = null)
     {
         MODE = PlayerMode.GAME;
+        action?.Invoke();
     }
 
-    public void SetInstallationMode()
+    public void SetInstallationMode(Action action = null)
     {
         MODE = PlayerMode.INSTALLATION;
+        action?.Invoke();
+    }
+
+    public void SetDeadMode(Action action = null)
+    {
+        MODE = PlayerMode.DEAD;
+        action?.Invoke();
     }
 
     public virtual void GameModePlay(Action action)
@@ -56,9 +99,18 @@ public class Player : MonoBehaviour
             action.Invoke();
         }
     }
+
     public virtual void InstallModePlay(Action action)
     {
         if (MODE == PlayerMode.INSTALLATION)
+        {
+            action.Invoke();
+        }
+    }
+
+    public virtual void DeadMode(Action action)
+    {
+        if (MODE == PlayerMode.DEAD)
         {
             action.Invoke();
         }

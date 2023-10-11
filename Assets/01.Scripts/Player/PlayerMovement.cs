@@ -1,3 +1,4 @@
+using Cinemachine;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
@@ -10,9 +11,12 @@ public class PlayerMovement : Player
     public UnityEvent<float> OnVelocityChanged;
     public UnityEvent<bool> OnJumped;
     public UnityEvent<bool> OnWallLanding;
+    public UnityEvent<bool> OnViewLeft;
+    public UnityEvent<bool> OnFalling;
 
     private Collider2D _col;
     private Rigidbody2D _rig2d;
+    private PlayerStateManager _playerStateManager;
 
     private Vector2 _moveDirection;
     [SerializeField] private float _landingDirX;
@@ -52,11 +56,11 @@ public class PlayerMovement : Player
     {
         _rig2d = GetComponent<Rigidbody2D>();
         _col = GetComponent<Collider2D>();
+        _playerStateManager = GetComponent<PlayerStateManager>();
     }
 
     private void Update()
     {
-
     }
 
     private void FixedUpdate()
@@ -65,6 +69,14 @@ public class PlayerMovement : Player
         OnVelocityChanged?.Invoke(_currentSpeed);
         OnJumped?.Invoke(!_canJumping);
         OnWallLanding?.Invoke(_landing);
+        if (_rig2d.velocity.y < 0)
+        {
+            OnFalling?.Invoke(true);
+        }
+        else
+        {
+            OnFalling?.Invoke(false);
+        }
 
         MapCheck();
 
@@ -83,6 +95,15 @@ public class PlayerMovement : Player
                 _currentSpeed = 0;
             }
             _moveDirection = direction;
+        }
+        if (direction.x < 0)
+        {
+            OnViewLeft?.Invoke(true);
+        }
+        else if (direction.x > 0)
+        {
+            OnViewLeft?.Invoke(false);
+
         }
         _currentSpeed = CalculateSpeed(direction, true);
     }
@@ -133,7 +154,6 @@ public class PlayerMovement : Player
         }
     }
 
-
     public void WallLanding(bool value)
     {
         if (value == true && _landing == true)
@@ -145,15 +165,15 @@ public class PlayerMovement : Player
 
     private void MapCheck()
     {
-        RaycastHit2D floorRay = Physics2D.BoxCast(_col.bounds.center, _col.bounds.size, 0f, Vector3.down, 0.01f, mapLayer);
+        RaycastHit2D floorRay = Physics2D.BoxCast(_col.bounds.center, _col.bounds.size, 0f, Vector3.down, 0.1f, mapLayer);
         if (floorRay.collider != null)
         {
             _landing = false;
             _canJumping = true;
             return;
         }
-        RaycastHit2D rightWallRay = Physics2D.BoxCast(_col.bounds.center, _col.bounds.size, 0f, Vector3.right, 0.01f, mapLayer);
-        RaycastHit2D leftWallRay = Physics2D.BoxCast(_col.bounds.center, _col.bounds.size, 0f, Vector3.left, 0.01f, mapLayer);
+        RaycastHit2D rightWallRay = Physics2D.BoxCast(_col.bounds.center, _col.bounds.size, 0f, Vector3.right, 0.05f, mapLayer);
+        RaycastHit2D leftWallRay = Physics2D.BoxCast(_col.bounds.center, _col.bounds.size, 0f, Vector3.left, 0.05f, mapLayer);
         if (rightWallRay.collider != null)
         {
             _landingDirX = -1;

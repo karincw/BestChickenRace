@@ -65,7 +65,7 @@ public class PlayerInput : Player
             {
                 _playerStateManager.clickedItemName = hit.collider.gameObject.name;
                 _playerStateManager.clicked = true;
-                Destroy(hit.collider.gameObject);
+                hit.collider.gameObject.SetActive(false);
             }
         });
     }

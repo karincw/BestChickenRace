@@ -9,7 +9,7 @@ public class Ending : MonoBehaviour
         PlayerStateManager newPlayer;
         if (collision.TryGetComponent<PlayerStateManager>(out newPlayer))
         {
-            newPlayer.Ending();
+            newPlayer.Winning();
         }
     }
 }

@@ -27,10 +27,20 @@ public class PlayerAnimation : Player
 
     public void SetAniWallJumpValue(bool value)
     {
-        GameModePlay(() => _animator.SetBool("WallLanding", value));
+        GameModePlay(() => _animator.SetBool("Landing", value));
     }
 
-    public void SetEndingAnimation()
+    public void SetAniFalling(bool value)
+    {
+        GameModePlay(() => _animator.SetBool("Falling", value));
+    }
+
+    public void SetPlayerFlip(bool value)
+    {
+        GameModePlay(() => _spriterenderer.flipX = value);
+    }
+
+    public void SetWinAnimation()
     {
         GameModePlay(() => { Debug.Log(gameObject.name + "통과완료"); });
     }

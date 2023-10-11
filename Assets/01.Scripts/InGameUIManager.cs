@@ -24,20 +24,24 @@ public class InGameUIManager : MonoSingleton<InGameUIManager>
         switch (mode)
         {
             case PlayerMode.GAME:
-                _PlayerStateManager.clicked = false;
-                // 플레이어 위치 초기화 등등
-                GameManager.Instance.Turn++;
                 break;
             case PlayerMode.INSTALLATION:
-                _UI.gameObject.SetActive(true);
                 break;
         }
     }
 
     [ContextMenu("ChangeGame")]
-    private void DebugchangeGame() => ModeChange(PlayerMode.GAME);
+    private void DebugchangeGame()
+    {
+        _PlayerStateManager.StartPlayMode();
+        _PlayerStateManager.clicked = false;
+    }
     [ContextMenu("ChangeInstall")]
-    private void DebugchangeInstall() => ModeChange(PlayerMode.INSTALLATION);
+    private void DebugchangeInstall()
+    {
+        _PlayerStateManager.StartInstallMode();
+        _UI.gameObject.SetActive(true);
+    }
 
     [ContextMenu("NextTurn")]
     private void ChangeGame()
@@ -57,7 +61,7 @@ public class InGameUIManager : MonoSingleton<InGameUIManager>
         Installing(currentObj);
 
 #if UNITY_EDITOR
-        if(Input.GetKeyDown(KeyCode.F1))
+        if (Input.GetKeyDown(KeyCode.F1))
         {
             DebugchangeGame();
         }
@@ -83,6 +87,10 @@ public class InGameUIManager : MonoSingleton<InGameUIManager>
             Mathf.Floor(_cam.ScreenToWorldPoint(Input.mousePosition).x),
             Mathf.Floor(_cam.ScreenToWorldPoint(Input.mousePosition).y)
             );
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            obj.transform.rotation = Quaternion.Euler(0, 0, obj.transform.rotation.z + 90);
+        }
     }
 
     public void Uninstalling()
