@@ -21,7 +21,7 @@ public class PlayerStateManager : Player
     public string clickedItemName;
     public bool clicked = false;
 
-    public bool IsEnding = false;
+    public bool IsFinish = false;
 
     private void Awake()
     {
@@ -36,13 +36,14 @@ public class PlayerStateManager : Player
     {
         if (transform.position.y <= -17)
         {
-            SetDeadMode(() =>
-            {
-                PlayerCam.Priority = 5;
-                gameObject.SetActive(false);
-                Player.MODE = PlayerMode.DEAD;
-            });
+            SetDeadMode(OnDead);
         }
+    }
+
+    public void OnDead()
+    {
+        PlayerCam.Priority = 5;
+        Player.MODE = PlayerMode.DEAD;
     }
 
     public void StartPlayMode()
@@ -64,7 +65,7 @@ public class PlayerStateManager : Player
     public void Winning()
     {
         _animation.SetWinAnimation();
-        IsEnding = true;
+        IsFinish = true;
     }
 
 }
@@ -108,7 +109,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    public virtual void DeadMode(Action action)
+    public virtual void DeadModePlay(Action action)
     {
         if (MODE == PlayerMode.DEAD)
         {

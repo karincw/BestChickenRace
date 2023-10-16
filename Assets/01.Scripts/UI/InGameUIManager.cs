@@ -16,18 +16,7 @@ public class InGameUIManager : MonoSingleton<InGameUIManager>
     private void Start()
     {
         _UI.gameObject.SetActive(false);
-        ModeChange(PlayerMode.GAME);
-    }
-    public void ModeChange(PlayerMode mode)
-    {
-        Player.MODE = mode;
-        switch (mode)
-        {
-            case PlayerMode.GAME:
-                break;
-            case PlayerMode.INSTALLATION:
-                break;
-        }
+        DebugchangeInstall();
     }
 
     [ContextMenu("ChangeGame")]
@@ -89,7 +78,9 @@ public class InGameUIManager : MonoSingleton<InGameUIManager>
             );
         if (Input.GetKeyDown(KeyCode.R))
         {
-            obj.transform.rotation = Quaternion.Euler(0, 0, obj.transform.rotation.z + 90);
+
+            //회전 만들어야함
+
         }
     }
 

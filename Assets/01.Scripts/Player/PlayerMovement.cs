@@ -61,6 +61,7 @@ public class PlayerMovement : Player
 
     private void Update()
     {
+
     }
 
     private void FixedUpdate()
@@ -141,7 +142,7 @@ public class PlayerMovement : Player
         if (_landing)
         {
             _rig2d.velocity = Vector2.zero;
-            _rig2d.AddForce(new Vector2(_landingDirX * _JumpPower / 3, _JumpPower), ForceMode2D.Impulse);
+            _rig2d.AddForce(new Vector2(_landingDirX * _JumpPower / 2, _JumpPower), ForceMode2D.Impulse);
             _canJumping = false;
             _landing = false;
         }

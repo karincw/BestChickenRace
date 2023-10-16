@@ -18,7 +18,7 @@ public class PlayerInput : Player
 
     public override void GameModePlay(Action action)
     {
-        if (_playerStateManager.IsEnding is not true)
+        if (_playerStateManager.IsFinish is not true)
         {
             base.GameModePlay(action);
         }
@@ -43,6 +43,7 @@ public class PlayerInput : Player
     private void FixedUpdate()
     {
         GameModePlay(() => Movement?.Invoke(PlayerInputAction.PlayerAction.MoveVector.ReadValue<Vector2>()));
+        DeadModePlay(() => Movement?.Invoke(Vector2.zero));
     }
 
     private void JumpPerform(InputAction.CallbackContext context)
@@ -66,6 +67,7 @@ public class PlayerInput : Player
                 _playerStateManager.clickedItemName = hit.collider.gameObject.name;
                 _playerStateManager.clicked = true;
                 hit.collider.gameObject.SetActive(false);
+
             }
         });
     }
