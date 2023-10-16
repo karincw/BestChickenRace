@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.SymbolStore;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace Karin.Network
@@ -45,6 +47,12 @@ namespace Karin.Network
             process += result.Deserialize(buffer, offset);
 
             return process;
+        }
+
+        public static ushort ReadBoolData(ArraySegment<byte> buffer, int offset, out bool result)
+        {
+            result = BitConverter.ToBoolean(buffer.Array, buffer.Offset + offset);
+            return sizeof(bool);
         }
 
         public static ushort ReadIntData(ArraySegment<byte> buffer, int offset, out int result)
@@ -145,5 +153,14 @@ namespace Karin.Network
 
             return length; // 처리한 길이 반환
         }
+
+        public static ushort AppendBoolData(bool data, ArraySegment<byte> buffer, int offset)
+        {
+            ushort length = sizeof(bool);
+            Buffer.BlockCopy(BitConverter.GetBytes(data), 0, buffer.Array, buffer.Offset + offset, length);
+
+            return length;
+        }
+
     }
 }
