@@ -25,6 +25,7 @@ public class PlayerStateManager : Player
 
     private void Awake()
     {
+        currentPlayer = gameObject;
         _input = currentPlayer.GetComponent<PlayerInput>();
         _animation = currentPlayer.GetComponent<PlayerAnimation>();
         _movement = currentPlayer.GetComponent<PlayerMovement>();

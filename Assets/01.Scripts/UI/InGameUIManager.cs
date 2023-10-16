@@ -20,20 +20,20 @@ public class InGameUIManager : MonoSingleton<InGameUIManager>
     }
 
     [ContextMenu("ChangeGame")]
-    private void DebugchangeGame()
+    public void DebugchangeGame()
     {
         _PlayerStateManager.StartPlayMode();
         _PlayerStateManager.clicked = false;
     }
     [ContextMenu("ChangeInstall")]
-    private void DebugchangeInstall()
+    public void DebugchangeInstall()
     {
         _PlayerStateManager.StartInstallMode();
         _UI.gameObject.SetActive(true);
     }
 
     [ContextMenu("NextTurn")]
-    private void ChangeGame()
+    public void ChangeGame()
     {
         StartCoroutine(ChangeGameCorutine());
     }

@@ -8,6 +8,7 @@ namespace Packets
     {
         public override ushort ID => (ushort)PacketID.S_RoomEnterPacket;
 
+        public ushort playerid;
         public List<PlayerPacket> playerList;
 
         public override void Deserialize(ArraySegment<byte> buffer)
@@ -16,6 +17,7 @@ namespace Packets
 
             process += sizeof(ushort);
             process += sizeof(ushort);
+            process += PacketUtility.ReadUShortData(buffer, process, out playerid);
             process += PacketUtility.ReadListData<PlayerPacket>(buffer, process, out playerList);
         }
 
@@ -26,6 +28,7 @@ namespace Packets
 
             process += sizeof(ushort);
             process += PacketUtility.AppendUShortData(this.ID, buffer, process);
+            process += PacketUtility.AppendUShortData(this.playerid, buffer, process);
             process += PacketUtility.AppendListData<PlayerPacket>(this.playerList, buffer, process);
             PacketUtility.AppendUShortData(process, buffer, 0);
 

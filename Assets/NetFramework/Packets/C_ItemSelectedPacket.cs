@@ -8,7 +8,7 @@ namespace Packets
     {
         public override ushort ID => (ushort)PacketID.C_ItemSelectedPacket;
 
-        public PlayerPacket playerData;
+        public PlayerPacket playerData = new PlayerPacket();
 
         public override void Deserialize(ArraySegment<byte> buffer)
         {

@@ -1,4 +1,5 @@
 using Cinemachine;
+using Karin.Network;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
@@ -57,6 +58,7 @@ public class PlayerMovement : Player
         _rig2d = GetComponent<Rigidbody2D>();
         _col = GetComponent<Collider2D>();
         _playerStateManager = GetComponent<PlayerStateManager>();
+        
     }
 
     private void Update()
@@ -81,6 +83,11 @@ public class PlayerMovement : Player
 
         MapCheck();
 
+    }
+
+    public void SendPos(Packet packet)
+    {
+        NetworkManager.Instance.Send(packet);
     }
 
     public void Movement(Vector2 direction)

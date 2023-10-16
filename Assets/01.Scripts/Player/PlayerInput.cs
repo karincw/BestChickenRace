@@ -1,8 +1,8 @@
 using System;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using Packets;
 
 public class PlayerInput : Player
 {
@@ -68,6 +68,9 @@ public class PlayerInput : Player
                 _playerStateManager.clicked = true;
                 hit.collider.gameObject.SetActive(false);
 
+                C_ItemSelectedPacket packet = new C_ItemSelectedPacket();
+                packet.playerData.ItemSelected = true;
+                NetworkManager.Instance.Send(packet);
             }
         });
     }
