@@ -1,14 +1,14 @@
 ﻿using Karin.Network;
 using System;
 
-
 namespace Packets
 {
     public class C_MoveEndedPacket : Packet
     {
-        public override ushort ID => (ushort)PacketID.C_ItemSelectedPacket;
+        public override ushort ID => (ushort)PacketID.C_MoveEndedPacket;
 
-        public PlayerPacket playerData;
+        public ushort PlayerID;
+        public bool MoveEnded;
 
         public override void Deserialize(ArraySegment<byte> buffer)
         {
@@ -17,7 +17,8 @@ namespace Packets
             process += sizeof(ushort);
             process += sizeof(ushort);
 
-            process += PacketUtility.ReadDataPacket<PlayerPacket>(buffer, process, out playerData);
+            process += PacketUtility.ReadUShortData(buffer, process, out PlayerID);
+            process += PacketUtility.ReadBoolData(buffer, process, out MoveEnded);
         }
 
         public override ArraySegment<byte> Serialize()
@@ -27,7 +28,8 @@ namespace Packets
 
             process += sizeof(ushort);
             process += PacketUtility.AppendUShortData(this.ID, buffer, process);
-            process += PacketUtility.AppendDataPacket<PlayerPacket>(this.playerData, buffer, process);
+            process += PacketUtility.AppendUShortData(this.PlayerID, buffer, process);
+            process += PacketUtility.AppendBoolData(this.MoveEnded, buffer, process);
             PacketUtility.AppendUShortData(process, buffer, 0);
 
             return UniqueBuffer.Close(process);

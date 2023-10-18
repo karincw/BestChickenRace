@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using Packets;
+using UnityEngine.Rendering;
 
 public class PlayerInput : Player
 {
@@ -69,13 +70,19 @@ public class PlayerInput : Player
                 hit.collider.gameObject.SetActive(false);
 
                 C_ItemSelectedPacket packet = new C_ItemSelectedPacket();
-                packet.playerData.ItemSelected = true;
+                packet.playerID = (ushort)GameManager.Instance.playerID;
+                packet.Selected = true;
                 NetworkManager.Instance.Send(packet);
             }
         });
     }
     private void OnMouseRight(InputAction.CallbackContext callback)
     {
+        C_ItemInstalledPacket packet = new C_ItemInstalledPacket();
+        packet.ObjectData = new ObjectPacket(InGameUIManager.Instance.ObjX, InGameUIManager.Instance.ObjY, 0,_playerStateManager.clickedItemName);
+        packet.playerID = (ushort)GameManager.Instance.playerID;
+        packet.Installed = true;
+        NetworkManager.Instance.Send(packet);
         InGameUIManager.Instance.Uninstalling();
     }
 }

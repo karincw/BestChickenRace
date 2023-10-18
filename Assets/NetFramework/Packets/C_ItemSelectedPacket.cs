@@ -8,7 +8,8 @@ namespace Packets
     {
         public override ushort ID => (ushort)PacketID.C_ItemSelectedPacket;
 
-        public PlayerPacket playerData = new PlayerPacket();
+        public bool Selected;
+        public ushort playerID;
 
         public override void Deserialize(ArraySegment<byte> buffer)
         {
@@ -17,7 +18,8 @@ namespace Packets
             process += sizeof(ushort);
             process += sizeof(ushort);
 
-            process += PacketUtility.ReadDataPacket<PlayerPacket>(buffer, process, out playerData);
+            process += PacketUtility.ReadUShortData(buffer, process, out playerID);
+            process += PacketUtility.ReadBoolData(buffer, process, out Selected);
         }
 
         public override ArraySegment<byte> Serialize()
@@ -27,7 +29,8 @@ namespace Packets
 
             process += sizeof(ushort);
             process += PacketUtility.AppendUShortData(this.ID, buffer, process);
-            process += PacketUtility.AppendDataPacket<PlayerPacket>(this.playerData, buffer, process);
+            process += PacketUtility.AppendUShortData(this.playerID, buffer, process);
+            process += PacketUtility.AppendBoolData(this.Selected, buffer, process);
             PacketUtility.AppendUShortData(process, buffer, 0);
 
             return UniqueBuffer.Close(process);

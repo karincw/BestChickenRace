@@ -51,6 +51,9 @@ public class PacketManager
         packetFactories.Add((ushort)PacketID.S_MoveEndedPacket, PacketUtility.CreatePacket<S_MoveEndedPacket>);
         packetHandlers.Add((ushort)PacketID.S_MoveEndedPacket, PacketHandler.S_MoveEndedPacket);
 
+        packetFactories.Add((ushort)PacketID.S_GameEndPacket, PacketUtility.CreatePacket<S_GameEndPacket>);
+        packetHandlers.Add((ushort)PacketID.S_GameEndPacket, PacketHandler.S_GameEndPacket);
+
     }
 
     public Packet CreatePacket(ArraySegment<byte> buffer)

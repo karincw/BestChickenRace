@@ -33,21 +33,35 @@ public class PacketHandler
 
     public static void S_SelectEndPacket(Session session, Packet packet)
     {
-        InGameUIManager.Instance.ChangeGame();
+        InGameUIManager.Instance.ChangeInstall();
     }
 
     public static void S_ItemInstalledPacket(Session session, Packet packet)
     {
         S_ItemInstalledPacket InstalledPacket = packet as S_ItemInstalledPacket;
+
+        ObjectPacket objectdata = InstalledPacket.ObjectData;
+
+        OtherPlayer player = GameManager.Instance.GetPlayer(InstalledPacket.playerID);
+        GameManager.Instance.InstallBlock(objectdata);
+
     }
 
     public static void S_InstallEndPacket(Session session, Packet packet)
     {
-
+        InGameUIManager.Instance.changeGame();
     }
 
     public static void S_MoveEndedPacket(Session session, Packet packet)
     {
+        S_MoveEndedPacket moveEndedPacket = packet as S_MoveEndedPacket;
 
+
+        OtherPlayer player = GameManager.Instance.GetPlayer(moveEndedPacket.PlayerID);
+    }
+
+    public static void S_GameEndPacket(Session session, Packet packet)
+    {
+        InGameUIManager.Instance.changeSelect();
     }
 }

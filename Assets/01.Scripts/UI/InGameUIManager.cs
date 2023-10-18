@@ -6,34 +6,38 @@ public class InGameUIManager : MonoSingleton<InGameUIManager>
 
     [SerializeField] private GameObject _UI;
     [SerializeField] private PlayerStateManager _PlayerStateManager;
+    private Rigidbody2D rig2d;
     Camera _cam;
-    GameObject currentObj;
+    public GameObject currentObj;
+    public int ObjX;
+    public int ObjY;
 
     private void Awake()
     {
         _cam = Camera.main;
+        rig2d = GetComponent<Rigidbody2D>();
     }
     private void Start()
     {
         _UI.gameObject.SetActive(false);
-        DebugchangeInstall();
+        changeSelect();
     }
 
     [ContextMenu("ChangeGame")]
-    public void DebugchangeGame()
+    public void changeGame()
     {
         _PlayerStateManager.StartPlayMode();
         _PlayerStateManager.clicked = false;
     }
     [ContextMenu("ChangeInstall")]
-    public void DebugchangeInstall()
+    public void changeSelect()
     {
         _PlayerStateManager.StartInstallMode();
         _UI.gameObject.SetActive(true);
     }
 
     [ContextMenu("NextTurn")]
-    public void ChangeGame()
+    public void ChangeInstall()
     {
         StartCoroutine(ChangeGameCorutine());
     }
@@ -47,20 +51,26 @@ public class InGameUIManager : MonoSingleton<InGameUIManager>
 
     private void Update()
     {
+        if (currentObj != null)
+        {
+            ObjX = (int)currentObj.transform.position.x;
+            ObjY = (int)currentObj.transform.position.y;
+
+        }
         Installing(currentObj);
 
 #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.F1))
         {
-            DebugchangeGame();
+            changeGame();
         }
         if (Input.GetKeyDown(KeyCode.F2))
         {
-            DebugchangeInstall();
+            changeSelect();
         }
         if (Input.GetKeyDown(KeyCode.F3))
         {
-            ChangeGame();
+            ChangeInstall();
         }
         if (Input.GetKeyDown(KeyCode.F4))
         {
@@ -88,4 +98,5 @@ public class InGameUIManager : MonoSingleton<InGameUIManager>
     {
         currentObj = null;
     }
+
 }

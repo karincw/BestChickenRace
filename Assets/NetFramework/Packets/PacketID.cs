@@ -15,5 +15,6 @@ namespace Packets
         S_InstallEndPacket,
         C_MoveEndedPacket,
         S_MoveEndedPacket,
+        S_GameEndPacket
     }
 }

@@ -2,6 +2,7 @@ using Cinemachine;
 using Karin.Network;
 using System.Collections;
 using UnityEngine;
+using Packets;
 using UnityEngine.Events;
 
 
@@ -21,6 +22,10 @@ public class PlayerMovement : Player
 
     private Vector2 _moveDirection;
     [SerializeField] private float _landingDirX;
+
+    private float ocha = 0.05f;
+    private Vector2 ochavec = Vector2.zero;
+    private float delay = 0.01f;
 
     [Header("Movement")]
     [SerializeField] private float _currentSpeed = 0f;
@@ -58,7 +63,11 @@ public class PlayerMovement : Player
         _rig2d = GetComponent<Rigidbody2D>();
         _col = GetComponent<Collider2D>();
         _playerStateManager = GetComponent<PlayerStateManager>();
-        
+
+    }
+    private void Start()
+    {
+        StartCoroutine(MovePacketSender());
     }
 
     private void Update()
@@ -114,6 +123,38 @@ public class PlayerMovement : Player
 
         }
         _currentSpeed = CalculateSpeed(direction, true);
+
+        GameModePlay(() =>
+        {
+            ocha = Vector2.Distance(transform.position, ochavec);
+            if(ocha >= 0.05f)
+            {
+                C_MovePacket movePacket = new C_MovePacket();
+                movePacket.playerData = new PlayerPacket();
+                movePacket.playerData.PlayerID = (ushort)GameManager.Instance.playerID;
+                movePacket.playerData.X = transform.position.x;
+                movePacket.playerData.Y = transform.position.y;
+                NetworkManager.Instance.Send(movePacket);
+                ochavec = transform.position;
+            }
+        });
+    }
+
+    private IEnumerator MovePacketSender()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(delay);
+
+            C_MovePacket movePacket = new C_MovePacket();
+            movePacket.playerData = new PlayerPacket();
+            movePacket.playerData.PlayerID = (ushort)GameManager.Instance.playerID;
+            movePacket.playerData.X = transform.position.x;
+            movePacket.playerData.Y = transform.position.y;
+            NetworkManager.Instance.Send(movePacket);
+            ochavec = transform.position;
+
+        }
     }
 
     private float CalculateSpeed(Vector2 direction, bool useDecreaseSpeed = false, bool useIncreaseSpeed = false)
